@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'splash_screen.dart';
 import 'screen/home/home.dart'; 
+import 'login_page.dart';
 
 
 void main() {
@@ -26,7 +27,8 @@ class _MyAppState extends State<MyApp> {
       initialRoute: '/',
       routes: {
         '/': (context) => SplashScreen(),
-         '/home': (context) => HomePage(), 
+        '/login': (context) => const LoginPage(),
+        '/home': (context) => HomePage(), 
       },
     );
   }

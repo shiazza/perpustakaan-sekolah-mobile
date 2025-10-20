@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'register_page.dart';
 
-
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
@@ -16,18 +15,26 @@ class LoginPage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // logo
-                Image.asset(
-                  'assets/t_book_logo.png',
-                  height: 120,
+                Hero(
+                  tag: "logo",
+                  child: Image.asset(
+                    'assets/t_book_logo.png',
+                    height: 80,
+                  ),
                 ),
                 const SizedBox(height: 20),
-                const Text(
-                  'T-Book',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.orange,
+                const Hero(
+                  tag: "title",
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Text(
+                      'T-Book',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orange,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 30),
@@ -42,7 +49,7 @@ class LoginPage extends StatelessWidget {
                   child: Column(
                     children: [
                       TextField(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Email',
                           border: OutlineInputBorder(),
                           isDense: true,
@@ -51,7 +58,7 @@ class LoginPage extends StatelessWidget {
                       const SizedBox(height: 20),
                       TextField(
                         obscureText: true,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Password',
                           border: OutlineInputBorder(),
                           isDense: true,
@@ -61,12 +68,27 @@ class LoginPage extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          const Text("Don't have account"),
+                          const Text("Don't have account "),
                           GestureDetector(
-                           onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const RegisterPage()),
+                            onTap: () {
+                              Navigator.of(context).push(
+                                PageRouteBuilder(
+                                  transitionDuration:
+                                      const Duration(milliseconds: 600),
+                                  pageBuilder: (context, animation,
+                                          secondaryAnimation) =>
+                                      const RegisterPage(),
+                                  transitionsBuilder: (context, animation,
+                                      secondaryAnimation, child) {
+                                    final fade = Tween(
+                                            begin: 0.0, end: 1.0)
+                                        .animate(animation);
+                                    return FadeTransition(
+                                      opacity: fade,
+                                      child: child,
+                                    );
+                                  },
+                                ),
                               );
                             },
                             child: const Text(
@@ -96,18 +118,17 @@ class LoginPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       elevation: 5,
-                      ),
-                      onPressed: () {
-                        // Logika dari login ada di bagian sini
-                        ScaffoldMessenger.of(context).showSnackBar(
-                         const SnackBar(content: Text('Login Clicked')), 
-                        );
-                      },
-                      child: const Text(
-                        'Login',
-                        style: TextStyle(fontSize: 16),
-                      ),
                     ),
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Login Clicked')),
+                      );
+                    },
+                    child: const Text(
+                      'Login',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
                 )
               ],
             ),
