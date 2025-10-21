@@ -1,8 +1,77 @@
 import 'package:flutter/material.dart';
 import 'register_page.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    )..forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Widget _buildAnimatedTitle() {
+    final text = 'T-Book';
+    return Hero(
+      tag: "title",
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(text.length, (i) {
+          final delay = i * 0.1;
+          final offsetAnim = Tween<Offset>(
+            begin: const Offset(0, 0.5),
+            end: Offset.zero,
+          ).animate(
+            CurvedAnimation(
+              parent: _controller,
+              curve: Interval(delay, delay + 0.5, curve: Curves.easeOutCubic),
+            ),
+          );
+          final fadeAnim = Tween<double>(begin: 0, end: 1).animate(
+            CurvedAnimation(
+              parent: _controller,
+              curve: Interval(delay, delay + 0.4, curve: Curves.easeIn),
+            ),
+          );
+          return AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) => Opacity(
+              opacity: fadeAnim.value,
+              child: Transform.translate(
+                offset: Offset(0, offsetAnim.value.dy * 20),
+                child: child,
+              ),
+            ),
+            child: Text(
+              text[i],
+              style: const TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.orange,
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,23 +92,10 @@ class LoginPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Hero(
-                  tag: "title",
-                  child: Material(
-                    color: Colors.transparent,
-                    child: Text(
-                      'T-Book',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.orange,
-                      ),
-                    ),
-                  ),
-                ),
+                _buildAnimatedTitle(),
                 const SizedBox(height: 30),
 
-                // Input Form
+                // --- Form login ---
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
@@ -104,10 +160,7 @@ class LoginPage extends StatelessWidget {
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 30),
-
-                // Login Button
                 SizedBox(
                   width: double.infinity,
                   height: 45,
@@ -129,7 +182,7 @@ class LoginPage extends StatelessWidget {
                       style: TextStyle(fontSize: 16),
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),
