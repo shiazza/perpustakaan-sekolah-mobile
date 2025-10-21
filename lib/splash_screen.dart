@@ -13,38 +13,44 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    )..forward();
+ @override
+void initState() {
+  super.initState();
 
-    Timer(const Duration(seconds: 3), () {
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          transitionDuration: const Duration(milliseconds: 800),
-          pageBuilder: (context, animation, secondaryAnimation) =>
-              const LoginPage(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            final fade = Tween(begin: 0.0, end: 1.0).animate(animation);
-            final slideUp = Tween<Offset>(
-              begin: const Offset(0, 0.2),
-              end: Offset.zero,
-            ).animate(CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeOutCubic,
-            ));
-            return FadeTransition(
-              opacity: fade,
-              child: SlideTransition(position: slideUp, child: child),
-            );
-          },
-        ),
-      );
-    });
-  }
+  _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1200),
+  );
+
+  // Tambahkan delay sebelum animasi dimulai
+  Future.delayed(const Duration(milliseconds: 1500), () {
+    _controller.forward();
+  });
+
+  Timer(const Duration(seconds: 3), () {
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        transitionDuration: const Duration(milliseconds: 800),
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const LoginPage(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          final fade = Tween(begin: 0.0, end: 1.0).animate(animation);
+          final slideUp = Tween<Offset>(
+            begin: const Offset(0, 0.2),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOutCubic,
+          ));
+          return FadeTransition(
+            opacity: fade,
+            child: SlideTransition(position: slideUp, child: child),
+          );
+        },
+      ),
+    );
+  });
+}
 
   @override
   void dispose() {

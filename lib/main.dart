@@ -4,7 +4,7 @@ import 'screen/home/home.dart';
 import 'login_page.dart';
 
 
-void main() {
+void main() async {
   runApp(const MyApp());
 }
 

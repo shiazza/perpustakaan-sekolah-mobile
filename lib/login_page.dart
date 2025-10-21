@@ -28,7 +28,7 @@ class _LoginPageState extends State<LoginPage>
   }
 
   Widget _buildAnimatedTitle() {
-    final text = 'T-Book';
+    const text = 'T-Book';
     return Hero(
       tag: "title",
       child: Row(
@@ -75,6 +75,8 @@ class _LoginPageState extends State<LoginPage>
 
   @override
   Widget build(BuildContext context) {
+    const cardBorderRadius = BorderRadius.all(Radius.circular(12));
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -84,6 +86,7 @@ class _LoginPageState extends State<LoginPage>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // Logo
                 Hero(
                   tag: "logo",
                   child: Image.asset(
@@ -95,12 +98,13 @@ class _LoginPageState extends State<LoginPage>
                 _buildAnimatedTitle(),
                 const SizedBox(height: 30),
 
-                // --- Form login ---
+                // Form login
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: cardBorderRadius,
+                    color: Colors.white,
                   ),
                   child: Column(
                     children: [
@@ -136,8 +140,7 @@ class _LoginPageState extends State<LoginPage>
                                       const RegisterPage(),
                                   transitionsBuilder: (context, animation,
                                       secondaryAnimation, child) {
-                                    final fade = Tween(
-                                            begin: 0.0, end: 1.0)
+                                    final fade = Tween(begin: 0.0, end: 1.0)
                                         .animate(animation);
                                     return FadeTransition(
                                       opacity: fade,
@@ -160,7 +163,10 @@ class _LoginPageState extends State<LoginPage>
                     ],
                   ),
                 ),
+
                 const SizedBox(height: 30),
+
+                // Tombol login
                 SizedBox(
                   width: double.infinity,
                   height: 45,
@@ -170,7 +176,7 @@ class _LoginPageState extends State<LoginPage>
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      elevation: 5,
+                      elevation: 0,
                     ),
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
