@@ -55,7 +55,7 @@ class _LoginPageState extends State<LoginPage>
             builder: (context, child) => Opacity(
               opacity: fadeAnim.value,
               child: Transform.translate(
-                offset: Offset(0, offsetAnim.value.dy * 20),
+                offset: Offset(0, offsetAnim.value.dy * 30),
                 child: child,
               ),
             ),
@@ -65,6 +65,7 @@ class _LoginPageState extends State<LoginPage>
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
                 color: Colors.orange,
+                decoration: TextDecoration.none,
               ),
             ),
           );
