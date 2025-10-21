@@ -40,7 +40,7 @@ void initState() {
             end: Offset.zero,
           ).animate(CurvedAnimation(
             parent: animation,
-            curve: Curves.easeOutCubic,
+            curve: Curves.elasticOut,
           ));
           return FadeTransition(
             opacity: fade,
