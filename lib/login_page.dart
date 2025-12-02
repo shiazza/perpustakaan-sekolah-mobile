@@ -1,5 +1,7 @@
+import 'dart:math' as math; // 1. Perlu import ini untuk rumus sin/cos
 import 'package:flutter/material.dart';
-import 'register_page.dart';
+// Hapus import register_page jika belum ada filenya, atau biarkan jika ada.
+// import 'register_page.dart'; 
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -8,22 +10,39 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
+  // Gunakan TickerProviderStateMixin karena kita punya lebih dari 1 controller
+  
+  late AnimationController _entranceController; // Controller untuk animasi muncul (Scale/Fade)
+  late AnimationController _orbitController;    // Controller untuk animasi berputar (Orbit)
+  late final Animation<double> _circleAnim;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
+
+    // 1. Controller untuk animasi pembuka (munculnya bola)
+    _entranceController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 1000),
     )..forward();
+    
+    _circleAnim = CurvedAnimation(
+      parent: _entranceController, 
+      curve: Curves.easeOutCubic
+    );
+
+    // 2. Controller untuk animasi berputar (Orbit) - Berjalan selamanya
+    _orbitController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 13), // 13 detik untuk 1 putaran penuh (Slow)
+    )..repeat(); // .repeat() agar berputar terus tanpa henti
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _entranceController.dispose();
+    _orbitController.dispose(); // Jangan lupa dispose
     super.dispose();
   }
 
@@ -40,18 +59,18 @@ class _LoginPageState extends State<LoginPage>
             end: Offset.zero,
           ).animate(
             CurvedAnimation(
-              parent: _controller,
+              parent: _entranceController,
               curve: Interval(delay, delay + 0.5, curve: Curves.easeOutCubic),
             ),
           );
           final fadeAnim = Tween<double>(begin: 0, end: 1).animate(
             CurvedAnimation(
-              parent: _controller,
+              parent: _entranceController,
               curve: Interval(delay, delay + 0.4, curve: Curves.easeIn),
             ),
           );
           return AnimatedBuilder(
-            animation: _controller,
+            animation: _entranceController,
             builder: (context, child) => Opacity(
               opacity: fadeAnim.value,
               child: Transform.translate(
@@ -82,39 +101,81 @@ class _LoginPageState extends State<LoginPage>
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Bola gradasi kiri atas
+          // --- BOLA GRADASI KIRI ATAS ---
           Positioned(
             top: -100,
             left: -100,
-            child: Container(
-              width: 250,
-              height: 250,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [Color(0xFFFFB347), Colors.white],
-                  radius: 0.8,
-                ),
-              ),
+            child: AnimatedBuilder(
+              // Kita listen ke orbitController untuk gerakan memutar
+              animation: _orbitController,
+              builder: (context, child) {
+                // Rumus Orbit: Menggunakan Sin & Cos
+                // Radius 30 piksel berputar mengelilingi titik awal (-100, -100)
+                final angle = _orbitController.value * 2 * math.pi;
+                final dx = 30 * math.cos(angle); 
+                final dy = 30 * math.sin(angle);
+
+                return Transform.translate(
+                  offset: Offset(dx, dy), // Menggerakkan posisi X/Y
+                  child: Opacity(
+                    opacity: _circleAnim.value,
+                    child: Transform.scale(
+                      scale: 0.8 + 0.2 * _circleAnim.value,
+                      child: Container(
+                        width: 250,
+                        height: 250,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: RadialGradient(
+                            colors: [Color(0xFFFFB347), Colors.white],
+                            radius: 0.8,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
-          // Bola gradasi kanan bawah
+
+          // --- BOLA GRADASI KANAN BAWAH ---
           Positioned(
             bottom: -60,
             right: -60,
-            child: Container(
-              width: 200,
-              height: 200,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [Color(0xFFFFB347), Colors.white],
-                  radius: 0.8,
-                ),
-              ),
+            child: AnimatedBuilder(
+              animation: _orbitController,
+              builder: (context, child) {
+                // Agar variatif, bola bawah berputar berlawanan arah (minus angle)
+                final angle = -_orbitController.value * 2 * math.pi;
+                final dx = 30 * math.cos(angle);
+                final dy = 30 * math.sin(angle);
+
+                return Transform.translate(
+                  offset: Offset(dx, dy),
+                  child: Opacity(
+                    opacity: _circleAnim.value,
+                    child: Transform.scale(
+                      scale: 0.8 + 0.2 * _circleAnim.value,
+                      child: Container(
+                        width: 200,
+                        height: 200,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: RadialGradient(
+                            colors: [Color(0xFFFFB347), Colors.white],
+                            radius: 0.8,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
-          // Konten utama
+
+          // --- KONTEN UTAMA ---
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -122,10 +183,9 @@ class _LoginPageState extends State<LoginPage>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Logo
                     Hero(
                       tag: "logo",
-                      child: Image.asset(
+                       child: Image.asset(
                         'assets/t_book_logo.png',
                         height: 80,
                       ),
@@ -161,41 +221,6 @@ class _LoginPageState extends State<LoginPage>
                             ),
                           ),
                           const SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              const Text("Don't have account "),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    PageRouteBuilder(
-                                      transitionDuration:
-                                          const Duration(milliseconds: 600),
-                                      pageBuilder: (context, animation,
-                                              secondaryAnimation) =>
-                                          const RegisterPage(),
-                                      transitionsBuilder: (context, animation,
-                                          secondaryAnimation, child) {
-                                        final fade = Tween(begin: 0.0, end: 1.0)
-                                            .animate(animation);
-                                        return FadeTransition(
-                                          opacity: fade,
-                                          child: child,
-                                        );
-                                      },
-                                    ),
-                                  );
-                                },
-                                child: const Text(
-                                  'Register',
-                                  style: TextStyle(
-                                    color: Colors.orange,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              )
-                            ],
-                          )
                         ],
                       ),
                     ),
@@ -215,11 +240,12 @@ class _LoginPageState extends State<LoginPage>
                           elevation: 0,
                         ),
                         onPressed: () {
+                          // Pastikan route '/home' sudah didaftarkan di main.dart
                           Navigator.pushReplacementNamed(context, '/home');
                         },
                         child: const Text(
                           'Login',
-                          style: TextStyle(fontSize: 16),
+                          style: TextStyle(fontSize: 16, color: Colors.white),
                         ),
                       ),
                     ),
